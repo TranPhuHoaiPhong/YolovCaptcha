@@ -29,6 +29,8 @@ def show_cropped_image(cropped_img, title=""):
 
 # Danh sách để lưu các tên nhãn, sử dụng set để tránh trùng lặp
 names_set = set()
+# Từ điển để lưu class_id cho từng nhãn
+class_id_map = {}
 
 # Hàm xử lý từng tấm ảnh
 def process_image(img_path):
@@ -74,8 +76,14 @@ def process_image(img_path):
         box_width = (x2 - x1) / img_width
         box_height = (y2 - y1) / img_height
 
-        # Gán ID lớp (class_id)
-        class_id = ord(labels[idx]) - ord('0') if labels[idx].isdigit() else ord(labels[idx]) - ord('a') + 10
+        # Kiểm tra nếu nhãn đã tồn tại trong từ điển
+        if labels[idx] not in class_id_map:
+            # Nếu chưa tồn tại, gán class_id mới
+            class_id_map[labels[idx]] = len(class_id_map)
+        
+        # Lấy class_id cho nhãn hiện tại
+        class_id = class_id_map[labels[idx]]
+
         yolo_data.append(f"{class_id} {x_center:.6f} {y_center:.6f} {box_width:.6f} {box_height:.6f}")
 
         # Thêm tên nhãn vào set để tránh trùng lặp
