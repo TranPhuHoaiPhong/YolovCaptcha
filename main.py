@@ -2,17 +2,19 @@ import matplotlib.pyplot as plt
 import cv2
 import numpy as np
 import os
+import time
 
 # Đường dẫn đến thư mục chứa ảnh và thư mục lưu ảnh cắt
-img_dir = "./images/val"
-output_dir = "./labels/val"
-
+img_dir = "./images/train"
+output_dir = "./labels/train"
+a = []
 # Kiểm tra nếu không có ảnh
 if not os.path.exists(img_dir):
     raise FileNotFoundError(f"Thư mục {img_dir} không tồn tại.")
 
 # Kiểm tra nếu không có ảnh trong thư mục
 img_files = [f for f in os.listdir(img_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+
 if not img_files:
     raise FileNotFoundError("Không có tệp ảnh nào trong thư mục.")
 
@@ -33,6 +35,7 @@ names_set = set()
 class_id_map = {}
 
 # Hàm xử lý từng tấm ảnh
+# Hàm xử lý từng tấm ảnh
 def process_image(img_path):
     # Đọc ảnh gốc
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
@@ -48,14 +51,19 @@ def process_image(img_path):
     # Vùng bounding box cố định (nếu áp dụng cho tất cả ảnh)
     rectangles = [
         (30, 7, 50, 49),
-        (45, 7, 75, 49),
-        (68, 7, 98, 49),
-        (90, 7, 120, 49),
-        (112, 7, 145, 49),
+        (50, 7, 70, 49),
+        (70, 7, 90, 49),
+        (90, 7, 110, 49),
+        (110, 7, 150, 49),
     ]
     
     # Nhãn từ tên ảnh
     labels = list(os.path.splitext(os.path.basename(img_path))[0])
+
+    for i in labels:
+        if i not in a:
+            a.append(i)
+
     if len(labels) != len(rectangles):
         raise ValueError(f"Số lượng nhãn không khớp với số vùng đã chỉ định trong ảnh {img_path}.")
     
@@ -67,8 +75,11 @@ def process_image(img_path):
         cropped_img = gauss_img1[y1:y2, x1:x2]
         
         # Hiển thị ảnh cắt
-        # show_cropped_image(cropped_img, title=f"Ảnh: {os.path.basename(img_path)}, Class ID: {labels[idx]}")
-        
+        # plt.imshow(cropped_img, cmap='gray')  # Hiển thị ảnh dưới dạng thang độ xám
+        # plt.title(f"Ảnh: {os.path.basename(img_path)}, Class ID: {labels[idx]}")
+        # plt.axis('off')  # Tắt trục tọa độ
+        # plt.show()  # Hiển thị ngay ảnh cắt
+
         # Tính toán các thông số cho YOLO
         img_height, img_width = img.shape
         x_center = ((x1 + x2) / 2) / img_width
@@ -94,6 +105,8 @@ def process_image(img_path):
     with open(label_file_path, "w", encoding="utf-8") as f:
         f.write("\n".join(yolo_data))
 
+
+
 # Lặp qua từng ảnh trong thư mục và xử lý
 for img_file in img_files:
     img_path = os.path.join(img_dir, img_file)
@@ -107,4 +120,4 @@ for img_file in img_files:
 names = list(names_set)
 
 # Hiển thị danh sách tên nhãn
-print("Danh sách tên nhãn của các ảnh cắt:", names)
+print("Danh sách:", a)

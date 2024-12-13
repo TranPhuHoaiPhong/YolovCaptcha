@@ -1,0 +1,5 @@
+train: C:/MainPlace/Work/PythonApp/Mô hình Yolov (Đồ án)/images/train
+val: C:/MainPlace/Work/PythonApp/Mô hình Yolov (Đồ án)/images/val
+
+nc: 19 
+names: ['7', 'e', 'm', 'd', 'p', 'f', 'b', '4', '5', 'y', 'x', '8', '2', 'n', '3', 'w', 'c', 'g', '6']
